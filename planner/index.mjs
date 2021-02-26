@@ -1,4 +1,4 @@
-import pdf from "pdfjs";
+import PDFDocument from "pdfkit";
 import * as fs from "fs";
 
 const getDays = (year) => {
@@ -16,33 +16,38 @@ const getDays = (year) => {
 
 const createBaseDoc = () => {
   const ppi = 72;
-  return new pdf.Document({
+  const doc = new PDFDocument({
     width: 4.13 * ppi,
     height: 5.84 * ppi,
     name: "Daily Planner",
     author: "bromanko",
-    font: new pdf.Font(
-      fs.readFileSync("templates/ArchitectsDaughter-Regular.ttf")
-    ),
+    size: "A6",
   });
+  doc.font("templates/ArchitectsDaughter-Regular.ttf").fontSize(15);
+  return doc;
 };
 
-const createDayPage = (date) => {
-  const page = new pdf.ExternalDocument(fs.readFileSync("templates/day.pdf"));
-  return page;
+const createDayPage = (doc, date) => {
+  doc.addPage({
+    size: "A6",
+  });
+  // const page = new PDFDocument.ExternalDocument(
+  //   fs.readFileSync("templates/day.pdf")
+  // );
+  // return page;
 };
 
 const main = async function (year, outfile) {
   const doc = createBaseDoc();
 
   getDays(year)
-    .map(createDayPage)
+    .map((day) => createDayPage(doc, day))
     .map((page) => {
-      doc.addPagesOf(page);
+      // doc.addPagesOf(page);
     });
 
   doc.pipe(fs.createWriteStream(outfile));
-  await doc.end();
+  doc.end();
 };
 
 const year = 2021;

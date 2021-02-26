@@ -13,6 +13,6 @@
     "prettier": "^2.2.1"
   },
   "dependencies": {
-    "pdfjs": "^2.4.2"
+    "pdfkit": "^0.11.0"
   }
 }
