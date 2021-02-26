@@ -2,13 +2,17 @@
   "name": "supernote-planner",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
+    "start": "node --harmony-top-level-await index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "prettier": "^2.2.1"
+  },
+  "dependencies": {
+    "pdfjs": "^2.4.2"
   }
 }
