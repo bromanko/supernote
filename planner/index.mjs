@@ -19,17 +19,31 @@ const createBaseDoc = () => {
   return new pdf.Document({
     width: 4.13 * ppi,
     height: 5.84 * ppi,
+    name: "Daily Planner",
+    author: "bromanko",
+    font: new pdf.Font(
+      fs.readFileSync("templates/ArchitectsDaughter-Regular.ttf")
+    ),
   });
+};
+
+const createDayPage = (date) => {
+  const page = new pdf.ExternalDocument(fs.readFileSync("templates/day.pdf"));
+  return page;
 };
 
 const main = async function (year, outfile) {
   const doc = createBaseDoc();
 
-  getDays(year).map((d) => console.log(d));
+  getDays(year)
+    .map(createDayPage)
+    .map((page) => {
+      doc.addPagesOf(page);
+    });
 
   doc.pipe(fs.createWriteStream(outfile));
   await doc.end();
 };
 
-const year = 2021
-await main(year, `${year}-planner.pdf`);
+const year = 2021;
+await main(year, `output/${year}-planner.pdf`);
