@@ -2,9 +2,9 @@
   "name": "supernote-planner",
   "version": "1.0.0",
   "description": "",
-  "main": "index.mjs",
+  "main": "index.js",
   "scripts": {
-    "start": "node --harmony-top-level-await index.mjs",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -13,6 +13,6 @@
     "prettier": "^2.2.1"
   },
   "dependencies": {
-    "pdfkit": "^0.11.0"
+    "pdf-lib": "^1.16.0"
   }
 }
