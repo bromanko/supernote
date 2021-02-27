@@ -1,15 +1,22 @@
 const pdf = require("pdf-lib");
+const fontkit = require("@pdf-lib/fontkit");
 const fs = require("fs");
+
 const PDFDocument = pdf.PDFDocument;
+const rgb = pdf.rgb;
+
+const ArchitectFont = fs.readFileSync(
+  "templates/ArchitectsDaughter-Regular.ttf"
+);
 
 const getDays = (year) => {
-  const firstDayOfYear = new Date(year, 0, 0);
-  const firstDayOfNextYear = new Date(year + 1, 0, 0);
+  const firstDayOfYear = new Date(year, 0, 1);
+  const firstDayOfNextYear = new Date(year + 1, 0, 1);
 
   const days = [];
   const day = firstDayOfYear;
   while (day < firstDayOfNextYear) {
-    days.push(day);
+    days.push(new Date(day.getTime()));
     day.setDate(day.getDate() + 1);
   }
   return days;
@@ -19,13 +26,31 @@ const createBaseDoc = async () => {
   const doc = await PDFDocument.create();
   doc.setAuthor("bromanko");
   doc.setTitle("Daily Planner");
-  // doc.font("templates/ArchitectsDaughter-Regular.ttf").fontSize(15);
   return doc;
 };
 
-const addDayPage = async (doc, date) => {
+const dayString = (date) => {
+  const dayOfWeek = date.toLocaleString("en-us", { weekday: "long" });
+  const month = date.toLocaleString("en-us", { month: "long" });
+  const dayOfMonth = date.getDate();
+  const year = date.getFullYear();
+  return `${dayOfWeek} ${month} ${dayOfMonth}, ${year}`;
+};
+
+const addDayPage = async (doc, day) => {
   const pageDoc = await PDFDocument.load(fs.readFileSync("templates/day.pdf"));
   const [page] = await doc.copyPages(pageDoc, [0]);
+
+  doc.registerFontkit(fontkit);
+  const font = await doc.embedFont(ArchitectFont);
+
+  page.drawText(dayString(day), {
+    x: 2,
+    y: 379,
+    size: 13,
+    font,
+    color: rgb(50 / 255, 50 / 255, 50 / 255),
+  });
   doc.addPage(page);
 };
 
