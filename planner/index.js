@@ -1,9 +1,11 @@
 const pdf = require("pdf-lib");
 const fontkit = require("@pdf-lib/fontkit");
+const outlinePdfLib = require("@lillallol/outline-pdf");
 const fs = require("fs");
 
 const PDFDocument = pdf.PDFDocument;
 const rgb = pdf.rgb;
+const outlinePdf = outlinePdfLib.outlinePdfFactory(pdf);
 
 const ArchitectFont = fs.readFileSync(
   "templates/ArchitectsDaughter-Regular.ttf"
@@ -54,12 +56,27 @@ const addDayPage = async (doc, day) => {
   doc.addPage(page);
 };
 
+const addOutline = async (doc) => {
+  await outlinePdf.loadPdf(await doc.save());
+  outlinePdf.outline = `
+    1||Some random title 1
+    2|-|Some random title 2
+   -3|--|Some random title 3
+    4|---|Some random title 4
+    5|---|Some random title 5
+    6|-|Some random title 6
+    7||Some random title 7
+    `;
+  outlinePdf.applyOutlineToPdf();
+  return await outlinePdf.savePdf();
+};
+
 const main = async function (year, outfile) {
   const doc = await createBaseDoc();
 
   await Promise.all(getDays(year).map((day) => addDayPage(doc, day)));
 
-  const outBytes = await doc.save();
+  const outBytes = await addOutline(doc);
   fs.writeFileSync(outfile, outBytes);
 };
 
